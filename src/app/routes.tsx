@@ -10,6 +10,10 @@ import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { CatMascot } from './components/CatMascot';
 import { ProtectedRoute } from './components/ProtectedRoute'; 
+import { MyListings } from './pages/MyListings';  
+import { ListingDetail } from './pages/ListingDetail';
+import { Profile } from './pages/Profile';    
+
 
 function RootLayout() {
   return (
@@ -55,6 +59,10 @@ export const router = createBrowserRouter([
         path: 'register',
         element: <Register />,  
       },
+      {
+        path: 'listing/:id',
+        element: <ListingDetail />,
+      },
 
       // 2. Роуты только для авторизованных пользователей
       {
@@ -64,6 +72,16 @@ export const router = createBrowserRouter([
             path: 'submit',
             element: <SubmitListing />,
           },
+
+          {
+            path: 'profile',
+            element: <Profile />,
+          },
+          {
+            path: 'my-listings',
+            element: <MyListings />,
+          },
+          
         ],
       },
 

@@ -1,63 +1,50 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Send, Mail, UserPlus } from "lucide-react";
 import { registerUser } from "../../api/auth";
 
 export function Register() {
   const { t } = useLanguage();
   const navigate = useNavigate();
 
-  // ИСПРАВЛЕНО: Ключи теперь называются name и email (как на бэкенде)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     password: "",
-    confirmPassword: "",
+    confirmPassword: ""
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Валидация почты
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      alert("Введите корректный email");
-      return;
-    }
-
-    // Валидация пароля
-    if (formData.password.length < 6) {
-      alert("Пароль должен быть длиннее 5 символов");
-      return;
-    }
+    setError(null);
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Пароли не совпадают!");
+      setError("Пароли не совпадают");
       return;
     }
 
+    setLoading(true);
+
     try {
-      // Отправляем данные (теперь ключи совпадут с деструктуризацией на сервере)
-      const result = await registerUser({
+      await registerUser({
         name: formData.name,
         email: formData.email,
-        password: formData.password,
+        phone: formData.phone,
+        password: formData.password
       });
-
-      alert("Регистрация прошла успешно!");
-      navigate("/login");
-    } catch (error: any) {
-      alert(error.message || "Ошибка при регистрации");
+      
+      navigate("/login", { state: { message: "Регистрация успешна! Войдите в аккаунт." } });
+    } catch (err: any) {
+      setError(err.message || "Ошибка при регистрации");
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   return (
@@ -65,64 +52,102 @@ export function Register() {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-xl p-8 shadow-lg">
           <div className="text-center mb-8">
-            <div className="text-6xl mb-4">📝</div>
-            <h1 className="text-3xl font-bold mb-2">Создать аккаунт</h1>
+            <div className="text-6xl mb-4">🔍</div>
+            <h1 className="text-3xl font-bold mb-2">{t("registerTitle") || "Регистрация"}</h1>
+            <p className="text-muted-foreground">{t("registerSubtitle") || "Создайте аккаунт"}</p>
           </div>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 text-red-500 border border-red-200 rounded-lg text-sm text-center">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Поле Имя - ID должен быть "name" */}
             <div className="space-y-2">
-              <Label htmlFor="name">Полное имя</Label>
+              <Label htmlFor="name">{t("name") || "Имя"}</Label>
               <Input
                 id="name"
                 type="text"
                 value={formData.name}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
+                disabled={loading}
+                className="bg-white border border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none"
               />
             </div>
 
-            {/* Поле Email - ID должен быть "email" */}
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("email") || "Email"}</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
+                disabled={loading}
+                className="bg-white border border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none"
               />
             </div>
 
-            {/* Поле Пароль */}
             <div className="space-y-2">
-              <Label htmlFor="password">Пароль</Label>
+              <Label htmlFor="phone">{t("phone") || "Телефон"}</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="bg-white border border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">{t("password") || "Пароль"}</Label>
               <Input
                 id="password"
                 type="password"
                 value={formData.password}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
+                disabled={loading}
+                className="bg-white border border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none"
               />
             </div>
 
-            {/* Подтверждение пароля */}
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Подтвердите пароль</Label>
+              <Label htmlFor="confirmPassword">{t("confirmPassword") || "Подтвердите пароль"}</Label>
               <Input
                 id="confirmPassword"
                 type="password"
                 value={formData.confirmPassword}
-                onChange={handleChange}
+                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 required
+                disabled={loading}
+                className="bg-white border border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none"
               />
             </div>
 
-            <Button type="submit" className="w-full mt-2 bg-blue-600 text-white">
-              <UserPlus className="w-5 h-5 mr-2" />
-              Зарегистрироваться
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full"
+              disabled={loading}
+              style={{ backgroundColor: "var(--blue)", color: "white" }}
+            >
+              {loading ? "Загрузка..." : (t("registerButton") || "Зарегистрироваться")}
             </Button>
           </form>
+
+          <div className="text-center mt-4">
+  <span className="text-sm text-gray-600">
+    {t("haveAccount")}{" "}
+  </span>
+  <Link to="/login" className="text-sm text-blue-600 hover:underline font-medium">
+    {t("loginLink")}
+  </Link>
+</div>
+          
         </div>
       </div>
     </div>

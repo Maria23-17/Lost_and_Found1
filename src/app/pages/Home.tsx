@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardFooter } from '../components/ui/card';
-import { Search, Upload, Bell, CheckCircle, FileText, Smartphone, Shirt, Watch, PawPrint, Package, Send } from 'lucide-react';
+import { Search, FileText, Smartphone, Shirt, Watch, PawPrint, Package, Eye, Phone, AlertTriangle } from 'lucide-react';
 import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 
 export function Home() {
@@ -14,8 +14,24 @@ export function Home() {
   const [filter, setFilter] = useState<'all' | 'lost' | 'found'>('all');
   const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showContactFor, setShowContactFor] = useState<number | null>(null);
+  
+  // Состояния для диалога жалобы
+  const [showReportDialog, setShowReportDialog] = useState<number | null>(null);
+  const [selectedReason, setSelectedReason] = useState('');
+  const [customReasonText, setCustomReasonText] = useState('');
 
-  // Получаем данные с API
+  // Список причин для выбора
+  const reportReasons = [
+    'Спам или реклама',
+    'Мошенничество',
+    'Фальшивое объявление',
+    'Неверная категория',
+    'Дубликат объявления',
+    'Оскорбления или грубость',
+    'Другое'
+  ];
+
   useEffect(() => {
     const fetchListings = async () => {
       try {
@@ -28,7 +44,6 @@ export function Home() {
         setLoading(false);
       }
     };
-
     fetchListings();
   }, []);
 
@@ -44,12 +59,46 @@ export function Home() {
     return icons[category] || icons.other;
   };
 
-  // Фильтрация по типу и поисковый запрос
   const filteredListings = listings.filter(listing => {
     const matchesType = filter === 'all' || listing.type === filter;
     const matchesSearch = listing.title.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesType && matchesSearch;
   });
+
+  const submitReport = async (id: number) => {
+    let reason = selectedReason;
+    if (reason === 'Другое' && customReasonText.trim()) {
+      reason = customReasonText.trim();
+    }
+    
+    if (!reason || reason === 'Другое') {
+      alert('Пожалуйста, выберите причину или напишите свою');
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/listings/${id}/report`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ reason: reason })
+      });
+      if (response.ok) {
+        alert('📢 Жалоба отправлена! Администратор проверит объявление.');
+        setShowReportDialog(null);
+        setSelectedReason('');
+        setCustomReasonText('');
+      } else {
+        alert('❌ Ошибка при отправке жалобы');
+      }
+    } catch (error) {
+      console.error('Error reporting listing:', error);
+      alert('❌ Ошибка соединения с сервером');
+    }
+  };
 
   if (loading) {
     return <div className="text-center py-20">Загрузка...</div>;
@@ -66,7 +115,6 @@ export function Home() {
               {t(`slogan`)}
             </p>
             
-            {/* Search Bar */}
             <div className="flex gap-4 mb-6 md:mb-8">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
@@ -80,7 +128,6 @@ export function Home() {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex gap-4 justify-center flex-wrap">
               <Button 
                 size="lg"
@@ -112,7 +159,6 @@ export function Home() {
           </Button>
         </div>
 
-        {/* Filter Buttons */}
         <div className="flex gap-3 mb-8 flex-wrap">
           <Button
             variant={filter === 'all' ? 'default' : 'outline'}
@@ -140,46 +186,63 @@ export function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredListings.map((listing) => (
-            <Card key={listing.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="relative h-48">
-                <ImageWithFallback
-                  src={listing.image}
-                  alt={listing.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-medium ${
-                  listing.type === 'lost' 
-                    ? 'bg-orange-500 text-white' 
-                    : 'bg-blue-500 text-white'
-                }`}>
-                  {listing.type === 'lost' ? t('lost') : t('found')}
-                </div>
-              </div>
-              <CardContent className="pt-4">
-                <div className="flex items-center gap-2 text-muted-foreground mb-2">
-                  {getCategoryIcon(listing.category)}
-                  <span className="text-sm">{t(listing.category)}</span>
-                </div>
-                <h3 className="font-semibold text-lg mb-2">{listing.title}</h3>
-                <p className="text-sm text-muted-foreground">{listing.location}</p>
-                <p className="text-xs text-muted-foreground mt-1">{new Date(listing.date).toLocaleDateString('ru-RU', {
-                  day: 'numeric',
-                  month: 'long', year: 'numeric' , 
-                  hour: '2-digit', minute: '2-digit'
-                  })}</p>
-              </CardContent>
-              <CardFooter>
-                <Button variant="outline" className="w-full">
-                  {t('contact')}
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+  {filteredListings.map((listing) => (
+    <Card 
+      key={listing.id} 
+      className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+    >
+      <div className="relative h-48">
+        <ImageWithFallback
+          src={listing.image}
+          alt={listing.title}
+          className="w-full h-full object-cover"
+        />
+        <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-medium ${
+          listing.type === 'lost' 
+            ? 'bg-orange-500 text-white' 
+            : 'bg-blue-500 text-white'
+        }`}>
+          {listing.type === 'lost' ? t('lost') : t('found')}
         </div>
+      </div>
+      <CardContent className="pt-4">
+        <div className="flex items-center gap-2 text-muted-foreground mb-2">
+          {getCategoryIcon(listing.category)}
+          <span className="text-sm">{t(listing.category)}</span>
+        </div>
+        <h3 className="font-semibold text-lg mb-2 line-clamp-1">{listing.title}</h3>
+        <p className="text-sm text-muted-foreground line-clamp-1">{listing.location}</p>
+        <p className="text-xs text-muted-foreground mt-1">{new Date(listing.date).toLocaleDateString('ru-RU', {
+          day: 'numeric',
+          month: 'long', year: 'numeric' , 
+          hour: '2-digit', minute: '2-digit'
+        })}</p>
+      </CardContent>
+      <CardFooter className="flex flex-col gap-2 pt-0 pb-4">
+        <Button 
+          variant="outline" 
+          className="w-full gap-2 transition-all duration-300 hover:scale-105"
+          onClick={() => navigate(`/listing/${listing.id}`)}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'var(--orange)';
+            e.currentTarget.style.color = 'white';
+            e.currentTarget.style.borderColor = 'var(--orange)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '';
+            e.currentTarget.style.color = '';
+            e.currentTarget.style.borderColor = '';
+          }}
+        >
+          <Eye className="w-4 h-4" />
+          Подробнее
+        </Button>
+        
+      </CardFooter>
+    </Card>
+  ))}
+</div>
       </section>
-
-      {/* ...остальные секции остаются без изменений */}
     </div>
   );
 }

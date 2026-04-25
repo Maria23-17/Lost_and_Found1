@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { Button } from './ui/button';
-import { Globe, Menu, Check, User, LogOut, Settings } from 'lucide-react';
+import { Globe, Menu, Check, User, LogOut, Settings, FileText, UserCircle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,6 @@ import {
   SheetContent,
   SheetTrigger,
 } from './ui/sheet';
-// ДОБАВИЛ ИМПОРТЫ ДЛЯ ДИАЛОГА
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,19 +31,25 @@ export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
-  // Достаем данные пользователя
   const userJson = localStorage.getItem("user");
   const user = userJson ? JSON.parse(userJson) : null;
 
   const isActive = (path: string) => location.pathname === path;
 
-  // Функция самого выхода
   const performLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
-    setOpen(false);
+    setUserMenuOpen(false);
+    setLogoutDialogOpen(false);
+  };
+
+  // Закрываем меню при клике вне
+  const handleMenuClose = () => {
+    setUserMenuOpen(false);
   };
 
   return (
@@ -91,40 +96,68 @@ export function Header() {
                   </Link>
                 )}
                 
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                    <User className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="text-sm font-medium">{user.name}</span>
+                {/* ИКОНКА ПРОФИЛЯ - ДИЗАЙН КАК БЫЛ */}
+                <div className="relative">
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                  >
+                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                      <User className="h-4 w-4 text-primary" />
+                    </div>
+                    <span className="text-sm font-medium">{user.name}</span>
+                  </button>
+
+                  {/* КРАСИВОЕ ВЫПАДАЮЩЕЕ МЕНЮ */}
+                  {userMenuOpen && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-40"
+                        onClick={handleMenuClose}
+                      />
+                      <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-xl border z-50 overflow-hidden">
+                        {/* Информация о пользователе */}
+                        <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 border-b">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                              <User className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-semibold text-gray-800">{user.name}</p>
+                              <p className="text-xs text-gray-500">{user.email}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Пункты меню */}
+                        <div className="py-2">
+                          <Link
+                            to="/my-listings"
+                            onClick={handleMenuClose}
+                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors"
+                          >
+                            <FileText className="w-4 h-4 text-gray-500" />
+                            <span className="text-sm text-gray-700">Мои объявления</span>
+                          </Link>
+                        </div>
+
+                        {/* Кнопка выхода */}
+                        <div className="border-t pt-2 pb-2">
+                          <button
+                            onClick={() => {
+                              setUserMenuOpen(false);
+                              setLogoutDialogOpen(true);
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 transition-colors"
+                          >
+                            <LogOut className="w-4 h-4 text-red-500" />
+                            <span className="text-sm text-red-600">Выйти из аккаунта</span>
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
-
-                {/* --- ТВОЙ НОВЫЙ БЛОК ПОДТВЕРЖДЕНИЯ --- */}
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <button className="text-muted-foreground hover:text-destructive transition-colors">
-                      <LogOut className="h-5 w-5" />
-                    </button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Выход из системы</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Вы точно хотите выйти? Чтобы снова подавать объявления, вам придется войти в аккаунт.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Отмена</AlertDialogCancel>
-                      <AlertDialogAction 
-                        onClick={performLogout}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      >
-                        Выйти
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-                {/* ------------------------------------ */}
-
               </div>
             ) : (
               <>
@@ -134,6 +167,7 @@ export function Header() {
             )}
           </nav>
 
+          {/* Правая панель */}
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -174,6 +208,12 @@ export function Header() {
                   <Link to="/" onClick={() => setOpen(false)} className={`text-lg ${isActive('/') ? 'text-primary' : ''}`}>{t('home')}</Link>
                   <Link to="/how-it-works" onClick={() => setOpen(false)} className={`text-lg ${isActive('/how-it-works') ? 'text-primary' : ''}`}>{t('howItWorks')}</Link>
                   
+                  {user && (
+                    <Link to="/my-listings" onClick={() => setOpen(false)} className="text-lg">
+                      📋 Мои объявления
+                    </Link>
+                  )}
+                  
                   {user?.role === 'admin' && (
                     <Link to="/admin" onClick={() => setOpen(false)} className="text-lg text-amber-600 font-bold">Панель управления</Link>
                   )}
@@ -192,8 +232,13 @@ export function Header() {
                       <Link to="/register" onClick={() => setOpen(false)} className="text-lg">{t('register')}</Link>
                     </>
                   ) : (
-                    /* В мобильном меню можно оставить просто клик для скорости или тоже обернуть в AlertDialog */
-                    <button onClick={performLogout} className="flex items-center gap-2 text-lg text-destructive">
+                    <button 
+                      onClick={() => {
+                        setOpen(false);
+                        setLogoutDialogOpen(true);
+                      }} 
+                      className="flex items-center gap-2 text-lg text-destructive"
+                    >
                       <LogOut className="h-5 w-5" />
                       Выйти
                     </button>
@@ -204,6 +249,27 @@ export function Header() {
           </div>
         </div>
       </div>
+
+      {/* Диалог подтверждения выхода */}
+      <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Выход из системы</AlertDialogTitle>
+            <AlertDialogDescription>
+              Вы точно хотите выйти? Чтобы снова подавать объявления, вам придется войти в аккаунт.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Отмена</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={performLogout}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Выйти
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </header>
   );
 }
