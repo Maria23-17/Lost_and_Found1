@@ -81,18 +81,32 @@ export function MyListings() {
   const loadMyListings = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/my-listings', {
+      const response = await fetch('http://localhost:5000/api/listings/my-listings', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
-      setListings(data);
+      
+      // Если сервер возвращает { data: [...] }
+      if (data && Array.isArray(data.data)) {
+        setListings(data.data);
+      } 
+      // Если сервер возвращает просто массив
+      else if (Array.isArray(data)) {
+        setListings(data);
+      } 
+      // Если сервер возвращает что-то другое
+      else {
+        console.error('Неожиданный формат данных:', data);
+        setListings([]);
+      }
     } catch (error) {
       console.error('Error loading listings:', error);
+      setListings([]);
     } finally {
       setLoading(false);
     }
   };
-
+  
   const markAsResolved = async (id: number) => {
     setActionId(id);
     try {
