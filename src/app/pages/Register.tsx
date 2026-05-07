@@ -92,15 +92,22 @@ export function Register() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">{t("phone") || "Телефон"}</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="bg-white border border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none"
-              />
-            </div>
+  <Label htmlFor="phone">{t("phone") || "Телефон"}</Label>
+  <Input
+    id="phone"
+    type="tel"
+    placeholder="+7 (999) 123-45-67"
+    value={formData.phone}
+    onChange={(e) => {
+      const value = e.target.value;
+      // Разрешаем только цифры, +, -, пробелы, скобки
+      if (/^[\d+\-\s\(\)]*$/.test(value)) {
+        setFormData({ ...formData, phone: value });
+      }
+    }}
+    className="bg-white border border-gray-300 rounded-lg px-4 py-2"
+  />
+</div>
 
             <div className="space-y-2">
               <Label htmlFor="password">{t("password") || "Пароль"}</Label>

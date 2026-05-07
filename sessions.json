@@ -1,0 +1,14 @@
+{
+  "5299750930": {
+    "state": "waiting_category",
+    "data": {
+      "type": "lost"
+    },
+    "lang": "ru",
+    "user": {
+      "id": 18,
+      "name": "nastya",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImVtYWlsIjoibmFzdHlhQGdtYWlsLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzc4MDMzNzEyLCJleHAiOjE3NzgxMjAxMTJ9.-u_mHJiBKXtDeCyadlHwjtBf8sXayHMGlhbz-ISXQMs"
+    }
+  }
+}

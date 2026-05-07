@@ -203,16 +203,23 @@ export function SubmitListing() {
 
               {/* Телефон */}
               <div className="space-y-3">
-                <Label htmlFor="phone">{t('phone')}</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+998 90 123 45 67"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  required
-                />
-              </div>
+  <Label htmlFor="phone">{t('phone')}</Label>
+  <Input
+    id="phone"
+    type="tel"
+    placeholder="+7 (999) 123-45-67"
+    value={formData.phone}
+    onChange={(e) => {
+      const value = e.target.value;
+      // Разрешаем только цифры, +, -, пробелы, скобки
+      if (/^[\d+\-\s\(\)]*$/.test(value)) {
+        setFormData({ ...formData, phone: value });
+      }
+    }}
+    required
+    className="bg-white border border-gray-300 rounded-lg px-4 py-2"
+  />
+</div>
 
               {/* Загрузка фото */}
               <div className="space-y-3">

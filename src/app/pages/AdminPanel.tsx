@@ -3,7 +3,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
-import { LayoutDashboard, FileText, Users, Settings, Trash2, Package, UserCheck, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Settings, Trash2, Package, UserCheck, CheckCircle, Clock, AlertTriangle, Calendar } from 'lucide-react';
 
 interface Listing {
   id: number;
@@ -42,7 +42,7 @@ interface Report {
 }
 
 export function AdminPanel() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [listings, setListings] = useState<Listing[]>([]);
   const [users, setUsers] = useState<User[]>([]);
@@ -234,6 +234,49 @@ export function AdminPanel() {
     }
   };
 
+  // Форматирование даты и времени
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '—';
+    
+    // Парсим дату из строки БД
+    const date = new Date(dateString);
+    
+    // Получаем компоненты
+    const day = date.getDate();
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    
+    // Добавляем 5 часов (Узбекистан UTC+5)
+    hours = hours + 5;
+    
+    // Корректируем день если часы перевалили за 24
+    let finalDay = day;
+    let finalHours = hours;
+    if (hours >= 24) {
+      finalHours = hours - 24;
+      finalDay = day + 1;
+    }
+    
+    // Месяцы
+    const months = {
+      ru: ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'],
+      uz: ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentabr', 'Oktabr', 'Noyabr', 'Dekabr'],
+      en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    };
+    
+    const monthName = months[language as keyof typeof months]?.[month] || months.ru[month];
+    const hoursStr = finalHours.toString().padStart(2, '0');
+    const minutesStr = minutes.toString().padStart(2, '0');
+    
+    if (language === 'en') {
+      return `${monthName} ${finalDay}, ${year} ${hoursStr}:${minutesStr}`;
+    }
+    
+    return `${finalDay} ${monthName} ${year} ${hoursStr}:${minutesStr}`;
+  };
+
   const menuItems = [
     { id: 'dashboard', label: t('dashboard'), icon: <LayoutDashboard className="w-5 h-5" /> },
     { id: 'listings', label: t('listings'), icon: <FileText className="w-5 h-5" /> },
@@ -333,12 +376,13 @@ export function AdminPanel() {
                       <TableHead>{t('category')}</TableHead>
                       <TableHead>{t('title')}</TableHead>
                       <TableHead>{t('status')}</TableHead>
+                      <TableHead>{t('date')}</TableHead>
                       <TableHead>{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
-                      <TableRow><TableCell colSpan={7} className="text-center">{t('loading')}</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={8} className="text-center">{t('loading')}</TableCell></TableRow>
                     ) : listings.slice(0, 5).map((listing) => (
                       <TableRow key={listing.id}>
                         <TableCell className="font-medium">#{listing.id}</TableCell>
@@ -383,6 +427,12 @@ export function AdminPanel() {
                             <option value="closed">{t('closed')}</option>
                           </select>
                         </TableCell>
+                        <TableCell className="text-sm whitespace-nowrap">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {formatDate(listing.created_at)}
+                          </div>
+                        </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
                             {listing.status === 'pending' && (
@@ -420,12 +470,13 @@ export function AdminPanel() {
                       <TableHead>{t('title')}</TableHead>
                       <TableHead>{t('status')}</TableHead>
                       <TableHead>{t('author')}</TableHead>
+                      <TableHead>{t('date')}</TableHead>
                       <TableHead>{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
-                      <TableRow><TableCell colSpan={8} className="text-center">{t('loading')}</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={9} className="text-center">{t('loading')}</TableCell></TableRow>
                     ) : listings.map((listing) => (
                       <TableRow key={listing.id}>
                         <TableCell className="font-medium">#{listing.id}</TableCell>
@@ -471,6 +522,12 @@ export function AdminPanel() {
                           </select>
                         </TableCell>
                         <TableCell>{listing.user_name || `User #${listing.user_id}`}</TableCell>
+                        <TableCell className="text-sm whitespace-nowrap">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {formatDate(listing.created_at)}
+                          </div>
+                        </TableCell>
                         <TableCell>
                           <div className="flex gap-2">
                             <button onClick={() => deleteListing(listing.id)} className="text-red-600 hover:text-red-800" title={t('delete')}>
@@ -503,12 +560,13 @@ export function AdminPanel() {
                       <TableHead>{t('role')}</TableHead>
                       <TableHead>{t('status')}</TableHead>
                       <TableHead>{t('listingsCount')}</TableHead>
+                      <TableHead>{t('date')}</TableHead>
                       <TableHead>{t('actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loadingUsers ? (
-                      <TableRow><TableCell colSpan={8} className="text-center">{t('loading')}</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={9} className="text-center">{t('loading')}</TableCell></TableRow>
                     ) : users.map((user) => (
                       <TableRow key={user.id}>
                         <TableCell className="font-medium">#{user.id}</TableCell>
@@ -534,6 +592,12 @@ export function AdminPanel() {
                           </span>
                         </TableCell>
                         <TableCell>{user.listings_count || 0}</TableCell>
+                        <TableCell className="text-sm whitespace-nowrap">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {formatDate(user.created_at)}
+                          </div>
+                        </TableCell>
                         <TableCell>
                           <button
                             onClick={() => banUser(user.id, user.status)}
@@ -609,7 +673,12 @@ export function AdminPanel() {
                               <option value="resolved">{t('resolved')}</option>
                             </select>
                           </TableCell>
-                          <TableCell>{new Date(report.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell className="text-sm whitespace-nowrap">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {formatDate(report.created_at)}
+                            </div>
+                          </TableCell>
                           <TableCell>
                             <button 
                               onClick={() => {

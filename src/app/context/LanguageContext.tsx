@@ -17,7 +17,11 @@ const translations: Translations = {
   howItWorks: { ru: 'Как это работает', uz: 'Qanday ishlaydi', en: 'How It Works' },
   login: { ru: 'Войти', uz: 'Kirish', en: 'Login' },
   register : { ru: 'Регистрация', uz: 'Ro\'yhatdan o\'tish', en: 'Register' },
-  admin: { ru: 'Админ', uz: 'Admin', en: 'Admin' },
+  adminPanel: { ru: 'Админ-панель', uz: 'Admin panel', en: 'Admin Panel' },
+  logout: { ru: 'Выйти', uz: 'Chiqish', en: 'Logout' },
+  logoutfromaccount: { ru: 'Выйти из аккаунта', uz: 'Hisobdan chiqish', en: 'Logout' },
+  areYouSureToLogOut: { ru: 'Вы точно хотите выйти? Чтобы снова подавать объявления, вам придется войти в аккаунт.', uz: 'Вы точно хотите выйти? Чтобы снова подавать объявления, вам придется войти в аккаунт.', en: 'Are you sure you want to log out? You will need to log in again to submit listings.' },
+  cancel: { ru: 'Отмена', uz: 'Bekor qilish', en: 'Cancel' },
   
   // Home page
   siteName: { ru: 'Lost & Found — Бюро находок', uz: 'Lost & Found — Topilmalar byurosi', en: 'Lost & Found Bureau' },
@@ -36,11 +40,11 @@ const translations: Translations = {
   step1Title: { ru: 'Разместите объявление', uz: 'E\'lon joylashtiring', en: 'Post a Listing' },
   step1Desc: { ru: 'Опишите потерянную или найденную вещь', uz: 'Yo\'qolgan yoki topilgan narsani tasvirlab bering', en: 'Describe your lost or found item' },
   step1Details: { ru: 'Укажите категорию вещи, опишите её внешний вид, добавьте фотографию и место, где вы её потеряли или нашли. Чем подробнее описание, тем выше шанс найти владельца или вашу вещь.', uz: 'Narsa kategoriyasini ko\'rsating, tashqi ko\'rinishini tasvirlab bering, rasm va qayerda yo\'qotganingiz yoki topganingiz joyini qo\'shing. Tavsif qanchalik batafsil bo\'lsa, egasini yoki narsangizni topish imkoniyati shunchalik yuqori.', en: 'Specify the item category, describe its appearance, add a photo and the location where you lost or found it. The more detailed the description, the higher the chance of finding the owner or your item.' },
-  step2Title: { ru: 'Получите уведомление', uz: 'Xabarnoma oling', en: 'Get Notified' },
-  step2Desc: { ru: 'Мы найдём совпадения и уведомим вас', uz: 'Biz mos keladiganlarni topamiz va sizga xabar beramiz', en: 'We\'ll find matches and notify you' },
-  step2Details: { ru: 'Наша система автоматически ищет совпадения между потерянными и найденными вещами. Если находится подходящее объявление, мы отправим вам уведомление на email или в Telegram.', uz: 'Bizning tizimimiz yo\'qolgan va topilgan narsalar o\'rtasida avtomatik ravishda mos keladiganlarni qidiradi. Agar mos e\'lon topilsa, sizga email yoki Telegram orqali xabarnoma yuboramiz.', en: 'Our system automatically searches for matches between lost and found items. If a suitable listing is found, we will send you a notification via email or Telegram.' },
+  step2Title: { ru: 'Активный поиск', uz: 'Faol qidiruv', en: 'Active Search' },
+  step2Desc: { ru: 'Найдите совпадение', uz: 'Mos keladigan e\'lonlarni bulun', en: 'Find a match' },
+  step2Details: { ru: 'Используйте поиск и фильтры на сайте, чтобы найти похожие объявления. Регулярно проверяйте новые публикации — возможно, кто-то уже нашёл то, что вы потеряли, или ищет то, что нашли вы.', uz: 'Saytdagi qidiruv va filtrlarni ishlatib, o\'xshash e\'lonlarni toping. Yangi e\'lonlarni muntazam tekshirib turing — ehtimol, kimdir siz yo\'qotgan narsani allaqachon topgan yoki siz topgan narsani qidirayotgan bo\'lishi mumkin.', en: 'Use the search and filters on the site to find similar listings. Regularly check new posts — someone may have already found what you lost or is looking for what you found.' },
   step3Title: { ru: 'Верните вещь владельцу', uz: 'Narsani egasiga qaytaring', en: 'Return the Item' },
-  step3Desc: { ru: 'Свяжитесь и договоритесь о встрече', uz: 'Bog\'laning va uchrashuvni kelishing', en: 'Connect and arrange a meetup' },
+  step3Desc: { ru: 'Свяжитесь и договоритесь о встрече', uz: 'Bog\'laning va uchrashuvni k  elishing', en: 'Connect and arrange a meetup' },
   step3Details: { ru: 'Свяжитесь с человеком, который нашёл или потерял вещь. Договоритесь о встрече в безопасном общественном месте. Проверьте вещь и убедитесь, что это именно то, что вы искали.', uz: 'Narsani topgan yoki yo\'qotgan odam bilan bog\'laning. Xavfsiz jamoat joyida uchrashuvni kelishing. Narsani tekshiring va bu siz qidirayotgan narsa ekanligiga ishonch hosil qiling.', en: 'Contact the person who found or lost the item. Arrange a meeting in a safe public place. Check the item and make sure it\'s what you were looking for.' },
   telegramBotTitle: { ru: 'Используйте наш Telegram бот', uz: 'Telegram botimizdan foydalaning', en: 'Use Our Telegram Bot' },
   telegramBotDesc: { ru: 'Удобное управление объявлениями прямо из Telegram', uz: 'Telegram orqali qulay e\'lonlarni boshqarish', en: 'Manage listings conveniently from Telegram' },
@@ -53,6 +57,20 @@ const translations: Translations = {
   step1: { ru: 'Шаг 1', uz: '1-qadam', en: 'Step 1' },
   step2: { ru: 'Шаг 2', uz: '2-qadam', en: 'Step 2' },
   step3: { ru: 'Шаг 3', uz: '3-qadam', en: 'Step 3' },
+  
+  filters: { ru: 'Фильтры', uz: 'Filtrlar', en: 'Filters' },
+  allCategories: { ru: 'Все категории', uz: 'Barcha kategoriyalar', en: 'All categories' },
+  filterLostHelp: { ru: 'Показывает объявления о потерянных вещах', uz: 'Yo\'qolgan narsalar haqidagi e\'lonlarni ko\'rsatadi', en: 'Shows listings about lost items' },
+  filterFoundHelp: { ru: 'Показывает объявления о найденных вещах', uz: 'Topilgan narsalar haqidagi e\'lonlarni ko\'rsatadi', en: 'Shows listings about found items' },
+  filterAllHelp: { ru: 'Показывает все объявления', uz: 'Barcha e\'lonlarni ko\'rsatadi', en: 'Shows all listings' },
+  filterCategoryAllHelp: { ru: 'Показывает все категории', uz: 'Barcha kategoriyalarni ko\'rsatadi', en: 'Shows all categories' },
+  resetAll: { ru: 'Сбросить все', uz: 'Hammasini tozalash', en: 'Reset all' },
+  nothingFound: { ru: 'Ничего не найдено', uz: 'Hech narsa topilmadi', en: 'Nothing found' },
+  tryDifferentSearch: { ru: 'Попробуйте изменить параметры поиска', uz: 'Qidiruv parametrlarini o\'zgartirib ko\'ring', en: 'Try changing your search parameters' },
+  listings: { ru: 'объявлений', uz: 'ta e\'lon', en: 'listings' },
+  found: { ru: 'Найдено', uz: 'Topildi', en: 'Found' },
+  dateNotSpecified: { ru: 'Дата не указана', uz: 'Sana ko\'rsatilmagan', en: 'Date not specified' },
+  details: { ru: 'Подробнее', uz: 'Batafsil', en: 'Details' },
   
   // Listing Detail page
 back: { ru: 'Назад', uz: 'Orqaga', en: 'Back' },
@@ -85,7 +103,7 @@ loginToSeeContacts: { ru: '🔒 Войдите в аккаунт, чтобы у�
   submitListingTitle: { ru: 'Разместить объявление', uz: 'E\'lon joylashtirish', en: 'Submit Listing' },
   listingType: { ru: 'Тип объявления', uz: 'E\'lon turi', en: 'Listing Type' },
   lost: { ru: 'Утеряно', uz: 'Yo\'qolgan', en: 'Lost' },
-  found: { ru: 'Найдено', uz: 'Topilgan', en: 'Found' },
+
   category: { ru: 'Категория', uz: 'Kategoriya', en: 'Category' },
   selectCategory: { ru: 'Выберите категорию', uz: 'Kategoriyani tanlang', en: 'Select Category' },
   documents: { ru: 'Документы', uz: 'Hujjatlar', en: 'Documents' },
@@ -107,6 +125,7 @@ loginToSeeContacts: { ru: '🔒 Войдите в аккаунт, чтобы у�
   loginTitle: { ru: 'Вход в систему', uz: 'Tizimga kirish', en: 'Login' },
   loginSubtitle: { ru: 'Войдите, чтобы управлять объявлениями', uz: 'E\'lonlarni boshqarish uchun kiring', en: 'Login to manage your listings' },
   emailOrPhone: { ru: 'Email или телефон', uz: 'Email yoki telefon', en: 'Email or Phone' },
+  enter: { ru: 'Введите', uz: 'Kiritin', en: 'Enter' },
   password: { ru: 'Пароль', uz: 'Parol', en: 'Password' },
   loginButton: { ru: 'Войти', uz: 'Kirish', en: 'Login' },
   loginWithTelegram: { ru: 'Войти через Telegram', uz: 'Telegram orqali kirish', en: 'Login with Telegram' },
@@ -115,7 +134,8 @@ loginToSeeContacts: { ru: '🔒 Войдите в аккаунт, чтобы у�
   orContinueWith: { ru: 'Или продолжить с помощью', uz: 'Yoki davom ettiring', en: 'Or continue with' },
   noAссount: { ru: 'Нет аккаунта?', uz: 'Hisobingiz yo\'qmi?', en: 'Don\'t have an account?' },
   registerLink : { ru: 'Регистрация', uz: 'Ro\'yhatdan o\'tish', en: 'Register' },
-
+  asWellAs: { ru: 'А также', uz: 'Shuningdek', en: 'As well as' },
+  ourTelegramBot: { ru: 'Наш Telegram бот 😊', uz: 'Telegram botimiz 😊', en: 'Our Telegram Bot 😊' },
   // Register page 
   registerTitle: { ru: 'Создать аккаунт', uz: 'Hisob yaratish', en: 'Create Account' },
   registerSubtitle: { ru: 'Заполните данные для регистрации', uz: 'Ro\'yhatdan o\'tish uchun ma\'lumotlarni to\'ldiring', en: 'Fill in the details to register' },
@@ -136,9 +156,7 @@ loginToSeeContacts: { ru: '🔒 Войдите в аккаунт, чтобы у�
   contacts: { ru: 'Контакты', uz: 'Kontaktlar', en: 'Contacts' },
   
   // Admin panel
-adminPanel: { ru: 'Админ панель', uz: 'Admin panel', en: 'Admin Panel' },
 dashboard: { ru: 'Дашборд', uz: 'Dashboard', en: 'Dashboard' },
-listings: { ru: 'Объявления', uz: 'E\'lonlar', en: 'Listings' },
 users: { ru: 'Пользователи', uz: 'Foydalanuvchilar', en: 'Users' },
 reports: { ru: 'Жалобы', uz: 'Shikoyatlar', en: 'Reports' },
 settings: { ru: 'Настройки', uz: 'Sozlamalar', en: 'Settings' },
@@ -178,7 +196,6 @@ approve: { ru: 'Одобрить', uz: 'Tasdiqlash', en: 'Approve' },
 delete: { ru: 'Удалить', uz: 'O\'chirish', en: 'Delete' },
  
 //MyListnings
-// Добавьте эти ключи в объект translations
 myListings: { ru: 'Мои объявления', uz: 'Mening e\'lonlarim', en: 'My Listings' },
 manageListings: { ru: 'Управляйте своими объявлениями', uz: 'E\'lonlaringizni boshqaring', en: 'Manage your listings' },
 createListing: { ru: 'Создать объявление', uz: 'E\'lon yaratish', en: 'Create Listing' },
@@ -190,7 +207,6 @@ deleteSuccess: { ru: '🗑️ Объявление удалено', uz: '🗑️
 deleteError: { ru: '❌ Ошибка при удалении', uz: '❌ O\'chirishda xatolik', en: '❌ Error deleting' },
 confirmDeleteTitle: { ru: 'Удалить объявление?', uz: 'E\'lonni o\'chirish?', en: 'Delete listing?' },
 confirmDeleteDesc: { ru: 'Вы уверены? Это действие нельзя отменить.', uz: 'Ishonchingiz komilmi? Bu amalni bekor qilib bo\'lmaydi.', en: 'Are you sure? This action cannot be undone.' },
-cancel: { ru: 'Отмена', uz: 'Bekor qilish', en: 'Cancel' },
 pendingMessage: { ru: '⏳ Объявление на модерации. После проверки оно появится на сайте.', uz: '⏳ E\'lon moderatsiyada. Tekshiruvdan so\'ng saytda paydo bo\'ladi.', en: '⏳ Listing is being moderated. It will appear on the site after review.' },
 closedMessage: { ru: '✅ Проблема решена! Объявление закрыто.', uz: '✅ Muammo hal qilindi! E\'lon yopildi.', en: '✅ Problem solved! Listing closed.' },
 

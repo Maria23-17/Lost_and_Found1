@@ -32,7 +32,7 @@ function RootLayout() {
       </main>
       <Footer />
       {/* Твой маскот всегда на месте */}
-      <CatMascot />
+      {/* <CatMascot /> */}
     </div>
   );
 }

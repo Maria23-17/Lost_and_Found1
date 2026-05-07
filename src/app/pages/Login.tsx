@@ -75,7 +75,7 @@ export function Login() {
               <Input
                 id="emailOrPhone"
                 type="text"
-                placeholder="Email или номер телефона"
+                placeholder={t('enter') + ' ' + t('emailOrPhone').toLowerCase()}
                 value={formData.emailOrPhone}
                 onChange={(e) =>
                   setFormData({ ...formData, emailOrPhone: e.target.value })
@@ -91,7 +91,7 @@ export function Login() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Пароль"
+                placeholder={t('enter') + ' ' + t('password').toLowerCase()}
                 value={formData.password}
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
@@ -148,7 +148,7 @@ export function Login() {
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-white text-muted-foreground">
-                {t("orContinueWith")}
+                {t("asWellAs")}
               </span>
             </div>
           </div>
@@ -161,13 +161,9 @@ export function Login() {
               onClick={() => window.open("https://t.me/LostFoundAgentBot", "_blank")}
             >
               <Send className="w-5 h-5 mr-2" />
-              {t("loginWithTelegram")}
+              {t("ourTelegramBot")}
             </Button>
 
-            <Button type="button" variant="outline" className="w-full">
-              <Mail className="w-5 h-5 mr-2" />
-              {t("loginWithGoogle")}
-            </Button>
           </div>        
         </div>
       </div>

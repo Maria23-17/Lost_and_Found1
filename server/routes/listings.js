@@ -1,3 +1,4 @@
+import transliteration from 'transliteration';
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
@@ -25,21 +26,63 @@ router.get("/", async (req, res) => {
     }
 });
 
-router.get("/search", async (req, res) => {
+// Поиск объявлений (публичный)
+router.get('/search', async (req, res) => {
     const { query } = req.query;
-    const searchTerm = `%${query}%`;
+    
+    console.log('🔍 Поиск:', query);
+    
+    if (!query || query.trim() === '') {
+      return res.json([]);
+    }
+    
     try {
-        const db = getDb();
-        const rows = await db.all(
-            "SELECT * FROM listings WHERE (title LIKE ? OR description LIKE ?) AND status = 'active'",
-            [searchTerm, searchTerm]
-        );
-        res.json(rows);
+      const db = getDb();
+      const searchTerm = `%${query}%`;
+      
+      // Конвертируем запрос в разные варианты
+      // "телефон" -> "telefon", "телефон", "telefon"
+      const latinQuery = transliteration.slugify(query, { lowercase: true, separator: '' });
+      const cyrillicQuery = transliteration.transliterate(query);
+      
+      console.log('📝 Варианты поиска:', { latinQuery, cyrillicQuery });
+      
+      const listings = await db.all(
+        `SELECT * FROM listings 
+         WHERE status = 'active' 
+         AND (
+           title LIKE ? 
+           OR description LIKE ? 
+           OR category LIKE ? 
+           OR location LIKE ?
+           OR title LIKE ?
+           OR description LIKE ?
+           OR title LIKE ?
+         )
+         ORDER BY 
+           CASE 
+             WHEN title LIKE ? THEN 1
+             WHEN title LIKE ? THEN 2
+             WHEN title LIKE ? THEN 3
+             ELSE 4
+           END,
+           created_at DESC
+         LIMIT 30`,
+        [
+          searchTerm, searchTerm, searchTerm, searchTerm,           // оригинальный запрос
+          `%${latinQuery}%`, `%${latinQuery}%`,                    // латиница
+          `%${cyrillicQuery}%`,                                    // транслитерация
+          searchTerm, `%${latinQuery}%`, `%${cyrillicQuery}%`      // для сортировки
+        ]
+      );
+      
+      console.log(`✅ Найдено: ${listings.length}`);
+      res.json(listings);
     } catch (err) {
-        res.status(500).json({ error: "Ошибка поиска" });
+      console.error('❌ Ошибка поиска:', err);
+      res.status(500).json({ error: err.message });
     }
 });
-
 router.get("/my-listings", authenticateToken, async (req, res) => {
     try {
         const db = getDb();
@@ -81,6 +124,11 @@ router.post("/", authenticateToken, upload.single("photo"), async (req, res) => 
     const userId = req.user.id;
     const status = 'pending';
     const db = getDb();
+
+    const phoneRegex = /^[\d+\-\s\(\)]{10,}$/;
+  if (phone && !phoneRegex.test(phone)) {
+    return res.status(400).json({ error: "Неверный формат телефона" });
+  }
 
     try {
         const result = await db.run(

@@ -1,10 +1,104 @@
+## 📋 О проекте
 
-# Lost and Found
+**Lost & Found** — сервис для поиска потерянных вещей и возврата найденного владельцам.
 
-This is a code bundle for Lost and Found. The original project is available at https://www.figma.com/make/IRurpExp1xFdUZ8R68EBWJ/Lost-and-Found?p=f.
+### 🎯 Основные возможности
 
-  ## Running the code
+| Функция | Описание |
+|---------|----------|
+| 🔐 **Регистрация и вход** | Создание аккаунта (email + пароль) |
+| 📝 **Создание объявлений** | Добавление фото, описания, категории, места |
+| 🔍 **Поиск** | Поиск по заголовку и описанию |
+| 🏷️ **Фильтрация** | Фильтр по типу ("Потеряно"/"Найдено") |
+| 👤 **Личный кабинет** | Управление своими объявлениями |
+| 🛡️ **Админ-панель** | Модерация объявлений, управление пользователями |
+| 🤖 **Telegram бот** | Создание объявлений, поиск, просмотр профиля |
+| 🌍 **Мультиязычность** | Поддержка русского, узбекского, английского |
 
-  Run `npm i` to install the dependencies.
+---
 
-  Run `npm run dev` to start the development server.
+## 🛠 Технологический стек
+
+### Frontend
+- React 18 + TypeScript
+- TailwindCSS
+- Vite
+- React Router
+
+### Backend
+- Node.js + Express
+- SQLite
+- JWT (аутентификация)
+- bcryptjs (хеширование)
+
+### Telegram Bot
+- node-telegram-bot-api
+- axios
+
+---
+
+## 🚀 Запуск проекта
+
+### 1. Установка зависимостей
+
+```bash
+npm install
+2. Настройка переменных окружения
+Создайте файл .env в корне проекта:
+
+env
+PORT=5000
+JWT_SECRET=ваш_секретный_ключ
+BOT_TOKEN=ваш_токен_бота
+API_URL=http://localhost:5000/api
+SITE_URL=http://localhost:5173
+
+3. Запуск
+Терминал 1 — сервер:
+bash
+npm run server
+
+Терминал 2 — бот:
+bash
+npm run bot
+
+Терминал 3 — фронтенд:
+bash
+npm run dev
+
+4. Доступ
+Сервис	Адрес
+Сайт	http://localhost:5173
+Сервер API	http://localhost:5000
+
+📁 Структура проекта
+text
+lost-and-found/
+├── server/                 # Backend (Express + SQLite)
+  └── database.sqlite       # База данных
+├── src/                    # Frontend (React + TypeScript)
+├── uploads/                # Загруженные фото  # База данных
+└── package.json
+
+👥 Роли пользователей
+Роль	Возможности
+Пользователь	Создание объявлений, поиск, управление своими объявлениями
+Администратор	Управление объявлениями, пользователями, жалобами
+🤖 Telegram бот
+Команды
+/start — запуск бота, выбор языка
+
+/menu — главное меню
+
+Возможности
+Регистрация и вход через Telegram
+Создание объявлений с фото
+Просмотр своих объявлений
+Поиск объявлений
+Просмотр профиля
+
+
+🔗 Ссылки
+Figma https://www.figma.com/make/IRurpExp1xFdUZ8R68EBWJ/Lost-and-Found?p=f.
+
+Telegram @LostFoundAgentBot
